@@ -10,7 +10,6 @@
 progsfile="https://raw.githubusercontent.com/askeko/AARBS/master/progs.csv"
 aurhelper="yay"
 repobranch="master"
-dotfilesrepo="https://github.com/askeko/absrice.git"
 
 ### FUNCTIONS ###
 
@@ -77,34 +76,8 @@ adduserandpass() {
 }
 
 refreshkeys() {
-	case "$(readlink -f /sbin/init)" in
-	*systemd*)
-		whiptail --infobox "Refreshing Arch Keyring..." 7 40
-		pacman --noconfirm -S archlinux-keyring >/dev/null 2>&1
-		;;
-	*)
-		whiptail --infobox "Enabling Arch Repositories for more a more extensive software collection..." 7 40
-		if ! grep -q "^\[universe\]" /etc/pacman.conf; then
-			echo "[universe]
-Server = https://universe.artixlinux.org/\$arch
-Server = https://mirror1.artixlinux.org/universe/\$arch
-Server = https://mirror.pascalpuffke.de/artix-universe/\$arch
-Server = https://artixlinux.qontinuum.space/artixlinux/universe/os/\$arch
-Server = https://mirror1.cl.netactuate.com/artix/universe/\$arch
-Server = https://ftp.crifo.org/artix-universe/" >>/etc/pacman.conf
-			pacman -Sy --noconfirm >/dev/null 2>&1
-		fi
-		pacman --noconfirm --needed -S \
-			artix-keyring artix-archlinux-support >/dev/null 2>&1
-		for repo in extra community; do
-			grep -q "^\[$repo\]" /etc/pacman.conf ||
-				echo "[$repo]
-Include = /etc/pacman.d/mirrorlist-arch" >>/etc/pacman.conf
-		done
-		pacman -Sy >/dev/null 2>&1
-		pacman-key --populate archlinux >/dev/null 2>&1
-		;;
-	esac
+	whiptail --infobox "Refreshing Arch Keyring..." 7 40
+	pacman --noconfirm -S archlinux-keyring >/dev/null 2>&1
 }
 
 manualinstall() {
@@ -180,31 +153,6 @@ installationloop() {
 	done </tmp/progs.csv
 }
 
-########### Managed by Chezmoi instead.
-#putgitrepo() {
-	# Downloads a gitrepo $1 and places the files in $2 only overwriting conflicts
-#	whiptail --infobox "Downloading and installing config files..." 7 60
-#	[ -z "$3" ] && branch="master" || branch="$repobranch"
-#	dir=$(mktemp -d)
-#	[ ! -d "$2" ] && mkdir -p "$2"
-#	chown "$name":wheel "$dir" "$2"
-#	sudo -u "$name" git -C "$repodir" clone --depth 1 \
-#		--single-branch --no-tags -q --recursive -b "$branch" \
-#		--recurse-submodules "$1" "$dir"
-#	sudo -u "$name" cp -rfT "$dir" "$2"
-#}
-
-########### Using lvim instead.
-#vimplugininstall() {
-	# TODO remove shortcuts error message
-	# Installs vim plugins.
-#	whiptail --infobox "Installing neovim plugins..." 7 60
-#	mkdir -p "/home/$name/.config/nvim/autoload"
-#	curl -Ls "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim" >  "/home/$name/.config/nvim/autoload/plug.vim"
-#	chown -R "$name:wheel" "/home/$name/.config/nvim"
-#	sudo -u "$name" nvim -c "PlugInstall|q|q"
-#}
-
 finalize() {
 	whiptail --title "All done!" \
 		--msgbox "Congrats! Provided there were no hidden errors, the script completed successfully and all the programs and configuration files should be in place.\\n\\nTo run the new graphical environment, log out and log back in as your new user, then run the command \"startx\" to start the graphical environment (it will start automatically in tty1).\\n\\n.t Abs" 13 80
@@ -257,7 +205,7 @@ echo "%wheel ALL=(ALL) NOPASSWD: ALL" >/etc/sudoers.d/aarbs-temp
 
 # Make pacman colorful, concurrent downloads and Pacman eye-candy.
 grep -q "ILoveCandy" /etc/pacman.conf || sed -i "/#VerbosePkgLists/a ILoveCandy" /etc/pacman.conf
-sed -Ei "s/^#(ParallelDownloads).*/\1 = 5/;/^#Color$/s/#//" /etc/pacman.conf
+sed -Ei "s/^#(ParallelDownloads).*/\1 = 10/;/^#Color$/s/#//" /etc/pacman.conf
 
 # Use all cores for compilation.
 sed -i "s/-j2/-j$(nproc)/;/^#MAKEFLAGS/s/^#//" /etc/makepkg.conf
@@ -270,16 +218,6 @@ manualinstall yay || error "Failed to install AUR helper."
 # and all build dependencies are installed.
 installationloop
 
-# Install the dotfiles in the user's home directory, but remove .git dir and
-# other unnecessary files.
-#putgitrepo "$dotfilesrepo" "/home/$name" "$repobranch"
-#rm -rf "/home/$name/.git/" "/home/$name/README.md" "/home/$name/LICENSE" "/home/$name/FUNDING.yml"
-
-# Install dotfiles with chezmoi
-
-# Install vim plugins if not alread present.
-#[ ! -f "/home/$name/.config/nvim/autoload/plug.vim" ] && vimplugininstall
-
 # Most important command! Get rid of the beep!
 rmmod pcspkr
 echo "blacklist pcspkr" >/etc/modprobe.d/nobeep.conf
@@ -291,19 +229,13 @@ sudo -u "$name" mkdir -p "/home/$name/.cache/zsh/"
 # Make rofi act as a dmenu replacement
 sudo ln -s /usr/bin/rofi /usr/bin/dmenu
 
-# dbus UUID must be generated for Artix runit.
-#dbus-uuidgen >/var/lib/dbus/machine-id
-
-# Use system notifications for Brave on Artix
-#echo "export \$(dbus-launch)" >/etc/profile.d/dbus.sh
-
 # Allow wheel users to sudo with password and allow several system commands
 # (like `shutdown` to run without password).
 echo "%wheel ALL=(ALL:ALL) ALL" >/etc/sudoers.d/00-aarbs-wheel-can-sudo
 echo "%wheel ALL=(ALL:ALL) NOPASSWD: /usr/bin/shutdown,/usr/bin/reboot,/usr/bin/systemctl suspend,/usr/bin/wifi-menu,/usr/bin/mount,/usr/bin/umount,/usr/bin/xbacklight,/usr/bin/pacman -Syu,/usr/bin/pacman -Syyu,/usr/bin/pacman -Syyu --noconfirm,/usr/bin/loadkeys,/usr/bin/pacman -Syyuw --noconfirm,/usr/bin/pacman -S -u -y --config /etc/pacman.conf --,/usr/bin/pacman -S -y -u --config /etc/pacman.conf --" >/etc/sudoers.d/01-aarbs-cmds-without-password
 echo "Defaults editor=/usr/bin/nvim" >/etc/sudoers.d/02-aarbs-visudo-editor
 mkdir -p /etc/sysctl.d
-echo "kernel.dmesg_restrict = 0" > /etc/sysctl.d/dmesg.conf
+echo "kernel.dmesg_restrict = 0" >/etc/sysctl.d/dmesg.conf
 
 # Last message! Install complete!
 finalize
