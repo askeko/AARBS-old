@@ -7,7 +7,7 @@
 
 ### OPTIONS AND VARIABLES ###
 
-progsfile="https://raw.githubusercontent.com/askeko/AARBS/master/progs.csv"
+progsfile="https://raw.githubusercontent.com/askeko/AARBS-dwm/master/progs.csv"
 aurhelper="yay"
 repobranch="master"
 
