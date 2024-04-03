@@ -201,7 +201,8 @@ adduserandpass || error "Error adding username and/or password."
 # Allow user to run sudo without password. Since AUR programs must be installed
 # in a fakeroot environment, this is required for all builds with AUR.
 trap 'rm -f /etc/sudoers.d/aarbs-temp' HUP INT QUIT TERM PWR EXIT
-echo "%wheel ALL=(ALL) NOPASSWD: ALL" >/etc/sudoers.d/aarbs-temp
+echo "%wheel ALL=(ALL) NOPASSWD: ALL
+Defaults:%wheel,root runcwd=*" >/etc/sudoers.d/aarbs-temp
 
 # Make pacman colorful, concurrent downloads and Pacman eye-candy.
 grep -q "ILoveCandy" /etc/pacman.conf || sed -i "/#VerbosePkgLists/a ILoveCandy" /etc/pacman.conf
@@ -236,6 +237,8 @@ echo "%wheel ALL=(ALL:ALL) NOPASSWD: /usr/bin/shutdown,/usr/bin/reboot,/usr/bin/
 echo "Defaults editor=/usr/bin/nvim" >/etc/sudoers.d/02-aarbs-visudo-editor
 mkdir -p /etc/sysctl.d
 echo "kernel.dmesg_restrict = 0" >/etc/sysctl.d/dmesg.conf
+
+rm -f /etc/sudoers.d/larbs-temp
 
 # Last message! Install complete!
 finalize
