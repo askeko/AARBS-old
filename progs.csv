@@ -5,6 +5,7 @@
 ,xorg-xinput,"for listing input devices."
 ,ttf-firacode-nerd,"is the best nerd font."
 ,ttf-jetbrains-mono-nerd,"provides mono spaced awesomeness."
+,noto-fonts-emoji,"is a dependency of the Starship prompts"
 A,lf-git,"is an extensive file manager that everyone likes."
 ,ueberzug,"enables previews in the lf file manager."
 ,github-cli,"is the GitHub CLI."
