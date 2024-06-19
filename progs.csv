@@ -63,6 +63,7 @@ A,i3lock-color,"allows you to lock your computer, and to quickly unlock it with 
 ,exa,"is a modern replacement for ls."
 ,sxhkd,"is a hotkey daemon for use with bspwm."
 ,bspwm,"is a tiling window manager."
+,picom,"is a compositor for use with bspwm."
 ,polybar,"is a customizable status bar."
 ,chezmoi,"is a dotfiles management tool."
 ,polkit,"is for handling policies."
