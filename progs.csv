@@ -63,7 +63,6 @@ A,i3lock-color,"allows you to lock your computer, and to quickly unlock it with 
 ,bspwm,"is a tiling window manager."
 ,sxhkd,"is a hotkey daemon for use with bspwm."
 ,polybar,"is a cool and very featured status monitor."
-,picom,"is a compositor."
 ,chezmoi,"is a dotfiles management tool."
 ,polkit,"is for handling policies."
 ,seahorse,"is for password management."
