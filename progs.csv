@@ -65,6 +65,7 @@ A,i3lock-color,"allows you to lock your computer, and to quickly unlock it with 
 ,exa,"is a modern replacement for ls."
 G,https://github.com/askeko/dwmblocks.git,"serves as the modular status bar."
 G,https://github.com/askeko/dwm.git,"is the window manager."
+,acpi,"is a system monitor CLI tool."
 ,chezmoi,"is a dotfiles management tool."
 ,polkit,"is for handling policies."
 ,lxsession-gtk3,"is an authentication agent."
